@@ -1,0 +1,131 @@
+body {
+    background-color: #000000;
+    color: #00ff00;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+    overflow: hidden;
+    background-size: 50px 50px;
+}
+.console {
+    white-space: pre-line;
+    font-size: 16px;
+}
+.hidden {
+    display: none;
+}
+.container-fluid {
+    max-width: 80%;
+
+}
+.loader-container {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+.letter {
+    font-size: 3rem;
+    font-weight: bold;
+    position: relative;
+    display: inline-block;
+}
+.progress-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg); /* Поворачиваем чтобы анимация шла сверху */
+    width: 150px;
+    height: 150px;
+}
+.progress-ring circle {
+    fill: none;
+    stroke: #00ff00;
+    stroke-width: 5;
+    stroke-dasharray: 439.8; /* Полный круг (2 * π * 40) */
+    stroke-dashoffset: 439.8; /* Полностью скрыта */
+}
+
+.hidden-content {
+    display: none;
+}
+
+.container {
+    max-width: 80%;
+}
+
+.main-block{
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 700px;
+}
+
+.content-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.button-to-main {
+    text-decoration: none;
+    color: #00ff00;
+    font-size: 20px;
+    border: 2px solid #00ff00;
+    border-radius: 40px;
+    padding: 10px 20px;
+    margin-top: 50px;
+}
+
+.button-to-main:hover {
+    color: #006800;
+    border: 2px solid #006800;
+}
+
+.pixel {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #00aa00;
+    opacity: 0;
+    animation: pixelAnimation 5s forwards;
+}
+
+@keyframes pixelAnimation {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh); /* Пиксели будут двигаться вниз */
+        opacity: 0;
+    }
+}
+
+/* Черный блок, который скрывает все */
+.black-cover {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: black;
+    animation: blackCoverAnimation 5s forwards;
+}
+
+@keyframes blackCoverAnimation {
+    0% {
+        height: 0;
+    }
+    100% {
+        height: 100vh; /* Заполняем экран */
+    }
+}
