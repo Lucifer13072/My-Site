@@ -1,0 +1,22 @@
+body {
+    background-color: black;
+}
+
+.container-fluid{
+    max-width: 80%;
+}
+
+.navbar {
+    width: 100%;
+    background-color: #1e1e1e;
+    border-radius: 0 0 10px 10px;
+    height: 80px;
+}
+
+.navbar-text {
+    color: white;
+    font-size: 30px;
+    font-weight: 600;
+    margin-left: 10px;
+    text-decoration: none;
+}
