@@ -1,2 +1,0 @@
-# My-Site
-My Site
