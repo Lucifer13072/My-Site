@@ -1,0 +1,176 @@
+body {
+    background-color: #22461E;
+}
+
+.container-fluid {
+    max-width: 90%;
+}
+
+.main-block{
+    background-image: url("../images/background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 992px;
+}
+
+.navbar {
+    border-radius: 0 0 40px 40px;
+    background-color: #3E654A;
+}
+
+.navbar-icon {
+    max-height: 100px;
+    max-width: 50px;
+}
+
+.nav-link {
+    font-weight: 700;
+    color: azure;
+}
+
+.nav-link:hover {
+    color: #d1e1e1;
+}
+
+.nav-button {
+    text-decoration: none;
+    color: azure;
+    font-weight: 700;
+    padding: 10px 20px;
+    background: rgb(62,187,96);
+    background: linear-gradient(240deg, rgba(62,187,96,1) 0%, rgba(0,171,39,1) 100%);
+    border-radius: 20px;
+}
+.nav-button:hover {
+    cursor: pointer;
+}
+.nav-button:active {
+    background: rgb(18,73,32);
+    background: linear-gradient(240deg, rgba(18,73,32,1) 0%, rgba(0,83,19,1) 100%);
+}
+
+.nav-button-deactive {
+    text-decoration: none;
+    color: azure;
+    font-weight: 700;
+    padding: 7px 20px;
+    border: 3px solid black ;
+    border-radius: 20px;
+    margin-right: 5px;
+}
+
+.nav-button-deactive:hover {
+    cursor: pointer;
+}
+
+.nav-button-deactive:active {
+    border: 3px solid #353535;
+    color: #a1aaaa;
+}
+
+.title-block {
+    margin-top: 200px;
+    max-width: 400px;
+    margin-left: 40px;
+}
+
+.title {
+    font-family: "Krona One", sans-serif;
+    font-weight: 700;
+    font-size: 60px;
+}
+
+.description {
+    font-family: "Krona One", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+}
+
+.link-image {
+    max-width: 60px;
+}
+
+.link-image:hover {
+    cursor: pointer;
+}
+
+.about {
+    margin-top: 450px;
+    max-width: 100%;
+    border-radius: 40px;
+    background: rgb(10,33,17);
+    background: linear-gradient(180deg, rgba(10,33,17,1) 0%, rgba(8,50,21,1) 100%);
+}
+
+.about-title {
+    margin-top: 10px;
+    font-size: 20px;
+    color: azure;
+    text-align: center;
+    font-weight: 600;
+}
+
+.about-text {
+    color: azure;
+    font-weight: 500;
+}
+.underground {
+    margin-top: 300px;
+}
+
+.discord-block {
+    background: rgb(64,154,92);
+    background: linear-gradient(180deg, rgba(64,154,92,1) 0%, rgba(19,147,59,1) 100%);
+    border-radius: 20px;
+    width: 100%;
+    height: 90%;
+    margin-bottom: 100px;
+}
+
+.discord {
+    margin-left: 5%;
+}
+
+.discord-title {
+    margin-top: 10px;
+    font-size: 20px;
+    color: azure;
+    text-align: center;
+    font-weight: 600;
+}
+
+footer {
+    background-color: #346343;
+}
+
+.footer-title {
+    margin-top: 10px;
+    font-size: 20px;
+    color: azure;
+    text-align: center;
+    font-weight: 600;
+}
+
+.footer-description {
+    margin-top: 10px;
+    font-size: 15px;
+    color: azure;
+    font-weight: 500;
+}
+
+.under {
+    background-color: #404c40;
+    max-width: 100%;
+    height: 30px;
+}
+
+.footer-under {
+    text-align: center;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.js-effect {
+    max-width: 100%;
+}
