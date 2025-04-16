@@ -1,50 +1,27 @@
 package main
 
 import (
-	"github.com/gorilla/sessions"
-	"golang.org/x/crypto/bcrypt"
-	"tytyber.ru/API"
+	"encoding/base64"
 )
 
-var store = sessions.NewCookieStore([]byte("super-secret-key"))
+func auth(user string, pass string) bool {
 
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
-		return
-	}
+	return true
+}
 
-	var creds struct {
-		Name     string `json:"name"`
-		Password string `json:"password"`
-	}
+func register(user string, pass string) bool {
 
-	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		http.Error(w, "Ошибка декодирования", http.StatusBadRequest)
-		return
-	}
+	return true
+}
 
-	var storedPassword string
-	var userID int
-	var rules int
+func hashing(str string) string {
 
-	err := db.QueryRow("SELECT id, password, rules FROM users WHERE name = ?", creds.Name).
-		Scan(&userID, &storedPassword, &rules)
-	if err != nil {
-		http.Error(w, "Неверный логин или пароль", http.StatusUnauthorized)
-		return
-	}
+	res := base64.StdEncoding.EncodeToString([]byte(str))
 
-	if err := bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(creds.Password)); err != nil {
-		http.Error(w, "Неверный логин или пароль", http.StatusUnauthorized)
-		return
-	}
+	return res
+}
 
-	session, _ := store.Get(r, "session")
-	session.Values["authenticated"] = true
-	session.Values["userID"] = userID
-	session.Values["rules"] = rules
-	session.Save(r, w)
+func unhasing(str string) string {
 
-	w.WriteHeader(http.StatusOK)
+	return "тест"
 }

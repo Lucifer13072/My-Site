@@ -1,0 +1,16 @@
+body {
+    background-color: #22461E;
+}
+
+.container-fluid {
+    max-width: 70%;
+}
+
+.js-effect {
+    max-width: 99%;
+}
+
+.main-block {
+    background-color: #000;
+    height: 500px;
+}
