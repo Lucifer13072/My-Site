@@ -94,6 +94,11 @@ body {
     cursor: pointer;
 }
 
+.profile-image {
+    max-width: 50px;
+}
+
+
 .about {
     margin-top: 450px;
     max-width: 100%;

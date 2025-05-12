@@ -1,25 +1,25 @@
-package API
+package api
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+func InitDB() *sql.DB {
+	// Задаём параметры подключения: юзер, пароль, хост, порт, имя базы
+	dsn := "root:@tcp(192.168.1.9:3306)/tytyber_api"
 
-func initDB() {
-	var err error
-	dsn := "root:@tcp(localhost:3306)/tytyber_api?parseTime=true"
-	db, err = sql.Open("mysql", dsn)
+	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal("Ошибка подключения к БД:", err)
+		log.Fatal("Ошибка при открытии соединения с MySQL:", err)
 	}
 
-	if err = db.Ping(); err != nil {
-		log.Fatal("БД недоступна:", err)
+	// Проверим, что база реально доступна
+	if err := db.Ping(); err != nil {
+		log.Fatal("MySQL не отвечает:", err)
 	}
-	fmt.Println("Подключение к БД установлено")
+
+	return db
 }

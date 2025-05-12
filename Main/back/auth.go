@@ -1,27 +1,46 @@
 package main
 
 import (
-	"encoding/base64"
+	"database/sql"
+	"errors"
+	_ "github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
+	"tytyber.ru/API"
 )
 
-func auth(user string, pass string) bool {
+var (
+	ErrUserNotFound    = errors.New("user not found")
+	ErrInvalidPassword = errors.New("invalid password")
+	ErrInvalidUserRole = errors.New("invalid user role")
+)
 
-	return true
-}
+func AuthenticateUser(name, password string) (int, error) {
+	if name == "" || password == "" {
+		return -1, ErrInvalidInput
+	}
 
-func register(user string, pass string) bool {
+	db := api.InitDB()
+	defer db.Close()
 
-	return true
-}
+	var hashedPassword string
+	var rules int
+	err := db.QueryRow("SELECT password, rules FROM users WHERE name = ?", name).Scan(&hashedPassword, &rules)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return -1, ErrUserNotFound
+		}
+		return -1, err
+	}
 
-func hashing(str string) string {
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		return -1, ErrInvalidPassword
+	}
 
-	res := base64.StdEncoding.EncodeToString([]byte(str))
+	// Проверка допустимых ролей (0-3)
+	if rules < 0 || rules > 3 {
+		return -1, ErrInvalidUserRole
+	}
 
-	return res
-}
-
-func unhasing(str string) string {
-
-	return "тест"
+	return rules, nil
 }

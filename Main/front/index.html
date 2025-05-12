@@ -40,8 +40,12 @@
                             </li>
                         </ul>
                         <form class="d-flex" role="search">
+                            {{if .isLoggedIn}}
+                            <a href="/profile" class="profile-button"><img class="profile-image" src="assets/images/icon-profile.png" alt=""></a>
+                            {{else}}
                             <a href="/register" class="nav-button-deactive">Sign up</a>
                             <a href="/auth" class="nav-button">Sign in</a>
+                            {{end}}
                         </form>
                     </div>
                 </div>
