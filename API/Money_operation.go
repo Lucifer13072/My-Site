@@ -78,8 +78,8 @@ func TopUpHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		_, err = tx.Exec(
-			"INSERT INTO money_history (user_id, datetime, money, description) VALUES (?, NOW(), ?, ?)",
-			userID, amount, description,
+			"INSERT INTO money_history (user_id, datetime, money, description, positive) VALUES (?, NOW(), ?, ?, ?)",
+			userID, amount, description, true,
 		)
 		if err != nil {
 			tx.Rollback()

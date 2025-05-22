@@ -1,44 +1,68 @@
+
 body {
-    background-color: #1C311D;
+    background-color: #256827;
+    min-height: 100vh;
+}
+.sidebar {
+    width: 250px;
+}
+.sidebar .nav-link.active {
+    background-color: #144512; color: #fff;
+}
+.content {
+    margin-left: 250px;
+}
+.card-chart {
+    height: 200px;
+}
+.avatar {
+    width: 50px;
+    height: 50px;
+    background: #ccc;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+.rounded-circle {
+    max-width: 100%;
 }
 
-.js-effect {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+.user-card {
+    background: linear-gradient(90deg,rgba(39, 117, 102, 1) 1%, rgba(49, 115, 77, 1) 50%, rgba(40, 92, 71, 1) 100%);
+    box-shadow: 2px 2px 10px;
+    border-radius: 10px;
 }
 
-.login-block {
-    background-color: #374F3D;
-    border-radius: 40px;
-    margin-top: 100px;
-}
-
-.title {
+.card-title {
+    font-family: "Krona One", sans-serif;
     color: azure;
-    font-size: 30px;
-    text-align: center;
 }
 
-.input-login {
-    width: 100%;
-    height: 40px;
+.card-text {
+    font-family: "Krona One", sans-serif;
+    color: azure;
+}
+
+.card-button {
+    text-decoration: none;
+    color: azure;
+    font-weight: 700;
+    padding: 10px 20px;
+    background: rgb(62,187,96);
+    background: linear-gradient(240deg, rgba(62,187,96,1) 0%, rgba(0,171,39,1) 100%);
+    border-radius: 20px;
+    border: none;
+}
+.card-button:hover {
+    cursor: pointer;
+}
+.card-button:active {
+    background: rgb(18,73,32);
+    background: linear-gradient(240deg, rgba(18,73,32,1) 0%, rgba(0,83,19,1) 100%);
+}
+
+.input-form {
+    max-width: 120px;
+    width: 120px;
     border-radius: 10px;
     border: none;
-    margin-top: 30px;
-}
-
-.button-log {
-    background-color: lime;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    width: 100%;
-    font-weight: 600;
-    font-size: 20px;
-    margin-top: 100px;
-    margin-bottom: 50px;
 }

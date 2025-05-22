@@ -13,23 +13,38 @@ import ( // для хеширования паролей
 	"path/filepath"
 	"strings"
 	api "tytyber.ru/API"
+	admin "tytyber.ru/Main/Admin/back"
 )
 
 var tpl = template.Must(template.ParseFiles(
 	"Main/front/index.html",
 	"Main/Admin/front/admin.html",
+	"Main/Admin/front/users.html",
 	"Main/front/reg.html",
 	"Main/front/auth.html",
-	"Main/front/profile.html"))
+	"Main/front/profile.html",
+	"Main/front/blog.html",
+	"Main/front/404.html"))
 
 var store = sessions.NewCookieStore([]byte("super-secret-key"))
+
+// statusRecorder нужен, чтобы перехватить код ответа
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+}
+
+func (rec *statusRecorder) WriteHeader(code int) {
+	rec.status = code
+	rec.ResponseWriter.WriteHeader(code)
+}
 
 func init() {
 	store.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   360000, // кука живёт 100 час
-		HttpOnly: true,   // нельзя читать куку из JS
-		Secure:   false,  // ОБЯЗАТЕЛЬНО false для HTTP
+		MaxAge:   31536000, // кука живёт 100 час
+		HttpOnly: true,     // нельзя читать куку из JS
+		Secure:   false,    // ОБЯЗАТЕЛЬНО false для HTTP
 	}
 }
 
@@ -41,10 +56,19 @@ func existsFile(path string) bool {
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session")
+
+	isLoggedIn := session.Values["username"] != nil
+
 	data := map[string]interface{}{
-		"isLoggedIn": session.Values["username"] != nil, // Если имя пользователя есть в сессии
-		"username":   session.Values["username"],        // Имя пользователя
-		"rules":      session.Values["rules"],           // Роли
+		"isLoggedIn": isLoggedIn,                 // Если имя пользователя есть в сессии
+		"username":   session.Values["username"], // Имя пользователя
+		"rules":      session.Values["rules"],    // Роли
+	}
+
+	if isLoggedIn {
+		api.VisitorsMakeMetrics(true)
+	} else {
+		api.VisitorsMakeMetrics(false)
 	}
 
 	err := tpl.ExecuteTemplate(w, "index.html", data)
@@ -74,9 +98,48 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Доступ запрещён", http.StatusForbidden)
 		return
 	}
+	// Проверяем, залогинен ли пользователь
+	username, ok := session.Values["username"].(string)
+	if !ok || username == "" {
+		// Если нет — редиректим на страницу авторизации
+		http.Redirect(w, r, "/auth", http.StatusSeeOther)
+		return
+	}
 
-	err = tpl.ExecuteTemplate(w, "admin.html", nil)
+	db := api.InitDB()
+	defer db.Close()
+
+	profile, err := api.GetUserProfile(db, username)
 	if err != nil {
+		log.Printf("Не удалось получить профиль %s: %v", username, err)
+		http.Error(w, "Профиль не найден", http.StatusNotFound)
+		return
+	}
+	var avatar string
+	if existsFile("Main/front/assets/userAvatars/" + username + ".jpg") {
+		avatar = "assets/userAvatars/" + username + ".jpg"
+	} else {
+		avatar = "assets/images/icon-profile.png"
+	}
+
+	usersMetrics := api.AllUsersMetrics()
+	money := api.AllMoneyaddMetrics()
+	visitorMetrics := api.GetVisitorsMetrics()
+
+	datas := map[string]interface{}{
+		"isLoggedIn": true,
+		"name":       profile.Nickname,
+		"email":      profile.Email,
+		"rules":      profile.Rules,
+		"date":       profile.DateRegistry.Format("02.01.2006 15:04"),
+		"user_key":   profile.UserKey,
+		"avatar":     avatar,
+		"usersmeric": usersMetrics,
+		"money":      money,
+		"visitors":   visitorMetrics,
+	}
+
+	if err = tpl.ExecuteTemplate(w, "admin.html", datas); err != nil {
 		http.Error(w, "Ошибка при рендере страницы", http.StatusInternalServerError)
 	}
 }
@@ -281,6 +344,165 @@ func avatarHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 }
 
+func blogHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session")
+
+	isLoggedIn := session.Values["username"] != nil
+
+	posts, err := api.GetPosts()
+	if err != nil {
+		http.Error(w, "Не удалось получить список пользователей: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Генерируем HTML карточек
+	cardsHTML, err := api.BuildPostsCards(posts)
+	if err != nil {
+		http.Error(w, "Ошибка рендеринга карточек: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Передаём в основной шаблон
+	data := map[string]interface{}{
+		"posts":      cardsHTML,
+		"isLoggedIn": isLoggedIn,                 // Если имя пользователя есть в сессии
+		"username":   session.Values["username"], // Имя пользователя
+		"rules":      session.Values["rules"],
+	}
+
+	err = tpl.ExecuteTemplate(w, "blog.html", data)
+	if err != nil {
+		http.Error(w, "Ошибка при рендере страницы", http.StatusInternalServerError)
+	}
+}
+
+func adminUsers(w http.ResponseWriter, r *http.Request) {
+
+	users, err := admin.FetchUsers()
+	if err != nil {
+		http.Error(w, "Не удалось получить список пользователей: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Генерируем HTML карточек
+	cardsHTML, err := admin.BuildUserCards(users)
+	if err != nil {
+		http.Error(w, "Ошибка рендеринга карточек: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Передаём в основной шаблон
+	data := map[string]interface{}{
+		"userscards": cardsHTML,
+	}
+
+	err = tpl.ExecuteTemplate(w, "users.html", data)
+	if err != nil {
+		http.Error(w, "Ошибка при рендере страницы", http.StatusInternalServerError)
+	}
+}
+
+func proxyAPIHandler(w http.ResponseWriter, r *http.Request) {
+	api.UserIndifecation()
+}
+
+func replaceRulesHandle(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// Если нужен GET – возвращаем список, но, наверно, GET вам не нужен
+		http.Error(w, "GET не поддерживается", http.StatusMethodNotAllowed)
+		return
+
+	case http.MethodPost:
+		// Парсим form и берём id из query
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "Ошибка разбора формы", http.StatusBadRequest)
+			return
+		}
+		idStr := r.URL.Query().Get("id")
+		amount := r.FormValue("amount")
+		if idStr == "" || amount == "" {
+			http.Error(w, "Нет id или amount", http.StatusBadRequest)
+			return
+		}
+
+		db := api.InitDB()
+		defer db.Close()
+
+		// Обновляем правило по user_id
+		query := `UPDATE users SET rules = $1 WHERE id = $2;`
+		if _, err := db.Exec(query, amount, idStr); err != nil {
+			log.Printf("Ошибка обновления rules для user_id=%s: %v", idStr, err)
+			http.Error(w, "Не удалось обновить права", http.StatusInternalServerError)
+			return
+		}
+
+		// Редирект обратно на страницу со всеми юзерами
+		http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+		return
+
+	default:
+		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
+	}
+}
+
+func deleteUserHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Разбираем форму
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Ошибка разбора формы", http.StatusBadRequest)
+		return
+	}
+	userID := r.FormValue("user_id")
+	if userID == "" {
+		http.Error(w, "Не передан user_id", http.StatusBadRequest)
+		return
+	}
+
+	// Подключаемся к БД
+	db := api.InitDB()
+	defer db.Close()
+
+	// Удаляем юзера
+	res, err := db.Exec(`DELETE FROM users WHERE id = $1;`, userID)
+	if err != nil {
+		log.Printf("Ошибка удаления user_id=%s: %v", userID, err)
+		http.Error(w, "Не удалось удалить пользователя", http.StatusInternalServerError)
+		return
+	}
+	// Опционально можно проверить, затронулась ли строка
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		http.Error(w, "Пользователь не найден", http.StatusNotFound)
+		return
+	}
+
+	// Редирект обратно на список юзеров
+	http.Redirect(w, r, "/admin/users", http.StatusSeeOther)
+}
+
+func notFoundPage(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+
+	// опционально: передаём данные в шаблон
+	data := struct {
+		URL string
+	}{
+		URL: r.URL.Path,
+	}
+
+	// рендерим именно 404.html
+	err := tpl.ExecuteTemplate(w, "404.html", data)
+	if err != nil {
+		// если шаблон упал — возвращаем простой текст
+		http.Error(w, "Ошибка при рендере страницы 404", http.StatusInternalServerError)
+	}
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -292,7 +514,7 @@ func main() {
 	// Раздача статических файлов
 	mux.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("Main/front/assets"))))
 	mux.Handle("/blog/images/", http.StripPrefix("/blog/images/", http.FileServer(http.Dir("API/blog/images/"))))
-	mux.Handle("/admin/assets/", http.StripPrefix("/admin/assets/", http.FileServer(http.Dir("Main/front/admin/assets/"))))
+	mux.Handle("/admin/assets/", http.StripPrefix("/admin/assets/", http.FileServer(http.Dir("Main/Admin/front/assets/"))))
 
 	// Роуты
 	mux.HandleFunc("/", indexHandler)
@@ -303,7 +525,31 @@ func main() {
 	mux.HandleFunc("/logout", logoutHandler)
 	mux.HandleFunc("/addmoney", api.TopUpHandler)
 	mux.HandleFunc("/upload-avatar", avatarHandler)
+	mux.HandleFunc("/blog", blogHandler)
+	mux.HandleFunc("/proxyapi", proxyAPIHandler)
+	mux.HandleFunc("/admin/users", adminUsers)
+	mux.HandleFunc("/admin/rulesreplace", replaceRulesHandle)
+	mux.HandleFunc("/admin/deleteusers", deleteUserHandle)
 
-	log.Println("Сервер запущен на порту", port)
-	log.Print(http.ListenAndServe(":"+port, mux))
+	// Обернём mux в statusRecorder, чтобы ловить 404
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h, pattern := mux.Handler(r)
+
+		switch {
+		case pattern == "":
+			// Ни один маршрут не подошел
+			notFoundPage(w, r)
+			return
+		case pattern == "/" && r.URL.Path != "/":
+			// Если бы мы ловили "/" — а это не /
+			notFoundPage(w, r)
+			return
+		default:
+			// Всё ок — передаём исполнению оригинальный хендлер
+			h.ServeHTTP(w, r)
+		}
+	})
+
+	log.Println("🚀 Сервер запущен на порту", port)
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

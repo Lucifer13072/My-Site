@@ -1,10 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Иконки -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/admin/assets/css/main.css" rel="stylesheet">
 </head>
-<body>
-Админ панель
+<body class="d-flex">
+
+<!-- Sidebar -->
+<nav class="sidebar bg-dark text-white position-fixed h-100">
+    <div class="p-3">
+        <a href="#" class="d-flex align-items-center mb-3 text-white text-decoration-none">
+            <i class="bi bi-grid-fill fs-4 me-2"></i><span class="fs-5 fw-bold">Admin panel</span>
+        </a>
+        <hr class="text-secondary">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-1">
+                <a href="/admin" class="nav-link text-white active"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            </li>
+            <li class="nav-item mb-1">
+                <a href="#" class="nav-link text-white"><i class="bi bi-basket3 me-2"></i>Products</a>
+            </li>
+            <li class="nav-item mb-1">
+                <a href="/admin/users" class="nav-link text-white"><i class="bi bi-graph-up me-2"></i>Users</a>
+            </li>
+            <li class="nav-item mb-1">
+                <a href="/admins/posts" class="nav-link text-white"><i class="bi bi-brush me-2"></i>Posts</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Main content -->
+<div class="content flex-grow-1">
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand bg-light px-4 py-2 shadow-sm">
+        <div class="container-fluid">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="#"><i class="bi bi-bell"></i><span class="badge bg-danger ms-1">3</span></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="avatar"><img style="max-height: 100%;  border-radius: 50%;" src="{{.avatar}}"></div>
+                        <span>{{.name}}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard widgets -->
+    <div class="container-fluid p-4">
+        <div class="row g-3">
+            <!-- Карточки статистики -->
+            <div class="col-md-3">
+                <div class="card text-white bg-primary">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6>Число покупок</h6>
+                            <h4>0</h4>
+                        </div>
+                        <i class="bi bi-cart fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-success">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6>Выручка</h6>
+                            <h4>{{.money}}₽</h4>
+                        </div>
+                        <i class="bi bi-wallet2 fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-warning">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6>Пользователи</h6>
+                            <h4>{{.usersmeric}}</h4>
+                        </div>
+                        <i class="bi bi-people fs-1"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6>Комментарии</h6>
+                            <h4>0</h4>
+                        </div>
+                        <i class="bi bi-envelope fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Графики -->
+        <div class="row g-3 mt-2">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">Поситители</div>
+                    <div class="card-body">
+                        <canvas id="trafficChart" class="card-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">Покупка продуктов</div>
+                    <div class="card-body">
+                        <canvas id="salesChart" class="card-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Социальные виджеты -->
+        <div class="row g-3 mt-2">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5>Рассылка блога</h5>
+                        <h2>0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5>Дискорд</h5>
+                        <h2>0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Библиотеки JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Пример инициализации Chart.js
+    const ctx1 = document.getElementById('trafficChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'line',
+        data: {{.visitors}}
+    });
+    const ctx2 = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['Direct','Affiliate','E-mail','Other'],
+            datasets: [{ data: [55,25,15,5] }]
+        }
+    });
+</script>
 </body>
 </html>
