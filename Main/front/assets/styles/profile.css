@@ -1,109 +1,191 @@
+/* === Основы === */
 body {
-    font-family: 'Segoe UI', sans-serif;
+    background-color: #071a0b;
+    color: #d1ffd6;
+    font-family: 'Krona One', sans-serif;
     margin: 0;
     padding: 0;
-    background:  #22461E;
 }
+
+/* === Анимации === */
+@keyframes slideUpFade {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* === Контейнер всей страницы === */
 .profile-container {
     display: flex;
     flex-direction: row;
-    gap: 20px;
-    padding: 30px;
+    padding: 20px;
+    gap: 30px;
+    animation: slideUpFade 0.6s ease-out both;
 }
+
+/* === Левая панель (банк, история) === */
 .sidebar {
     width: 300px;
 }
+
+/* Карточка пользователя */
 .wallet {
-    background: linear-gradient(240deg, rgba(62,187,96,1) 0%, rgba(0,171,39,1) 100%);
-    color: white;
-    border-radius: 15px;
+    background: linear-gradient(135deg, #0f5132, #198754);
     padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
+    color: #d1ffd6;
+    animation: slideUpFade 0.7s ease-out both;
 }
 
-.wallet h2, .wallet p {
-    margin: 5px 0;
+.wallet h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
 }
 
+.bank-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+/* Таблица операций */
 .transactions {
-    background: #3e934f;
-    border-radius: 10px;
+    margin-top: 20px;
+    background-color: #0d3d22;
+    border-radius: 15px;
     padding: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    max-height: 400px;
-    overflow-y: auto;
+    box-shadow: inset 0 0 10px rgba(0, 255, 128, 0.2);
+    animation: slideUpFade 0.8s ease-out both;
 }
 
 .transactions h3 {
     margin-bottom: 10px;
+    color: #aaffaa;
 }
 
 .transactions table {
     width: 100%;
-    font-size: 14px;
+    color: #d1ffd6;
+    font-size: 0.9rem;
 }
 
-.transactions th, .transactions td {
+.transactions th,
+.transactions td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     text-align: left;
-    padding: 6px;
 }
 
+/* === Профиль пользователя === */
 .profile-info {
     flex-grow: 1;
-    background: #3e934f;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #0b2e13;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 25px rgba(0, 255, 128, 0.3);
+    animation: slideUpFade 0.9s ease-out both;
 }
 
-.avatar {
-    width: 100px;
-    height: 100px;
-    background: #ccc;
-    border-radius: 50%;
-    margin-bottom: 15px;
-}
-
-.profile-fields div {
-    margin: 10px 0;
+.profile-fields {
+    margin-top: 20px;
 }
 
 .label {
-    font-weight: bold;
+    font-size: 16px;
+    color: #aaffaa;
+    margin-bottom: 10px;
 }
 
-.button {
-    border: none;
-    border-radius: 17px;
-    font-size: 15px;
-    padding: 10px 30px;
-    background: linear-gradient(240deg, rgba(62,187,96,1) 0%, rgba(0,171,39,1) 100%);
-    color: azure;
-    font-weight: 650;
-    text-decoration: none;
-    margin-top: 70px;
-}
-.button:hover {
-    cursor: pointer;
+/* === Аватар === */
+.avatar {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(0, 255, 128, 0.3);
 }
 
-.button-money {
-    border: none;
-    border-radius: 17px;
-    font-size: 15px;
-    padding: 5px 10px;
-    background: linear-gradient(240deg, rgba(62,187,96,1) 0%, rgba(0,171,39,1) 100%);
-    color: azure;
-    font-weight: 650;
+.avatar img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
 }
-.button-money:hover {
-    cursor: pointer;
+.avatar:hover img {
+    transform: scale(1.05);
 }
 
+/* Кнопка редактирования аватара */
 .avatar-edit {
-    max-width: 20px;
+    background: transparent;
     border: none;
-    background-color: rgba(1, 1, 1, 0);
     position: absolute;
+    bottom: 10px;
+    right: 10px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    backdrop-filter: blur(4px);
+    transition: transform 0.3s ease;
+}
+
+.avatar-edit:hover {
+    transform: scale(1.2);
+}
+
+.avatar-edit img {
+    max-height: 20px;
+    filter: drop-shadow(0 0 2px #2fff8f);
+}
+
+/* === Кнопки === */
+.button,
+.button-money {
+    display: inline-block;
+    margin-top: 15px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    background: #2fff8f;
+    color: #003f1b;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.button:hover,
+.button-money:hover {
+    background: #39ff14;
+    box-shadow: 0 0 10px #39ff14;
+    transform: scale(1.05);
+}
+
+/* === Модальное окно (Bootstrap) === */
+.modal-content {
+    background-color: #0b2e13;
+    border: 1px solid #2fff8f;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(47, 255, 143, 0.2);
+    color: #d1ffd6;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: #2fff8f;
+}
+
+.btn-close {
+    filter: invert(1);
 }

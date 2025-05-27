@@ -24,7 +24,8 @@ var tpl = template.Must(template.ParseFiles(
 	"Main/front/auth.html",
 	"Main/front/profile.html",
 	"Main/front/blog.html",
-	"Main/front/404.html"))
+	"Main/front/404.html",
+	"Main/front/403.html"))
 
 var store = sessions.NewCookieStore([]byte("super-secret-key"))
 
@@ -370,7 +371,7 @@ func blogHandler(w http.ResponseWriter, r *http.Request) {
 		"rules":      session.Values["rules"],
 	}
 
-	err = tpl.ExecuteTemplate(w, "blog.html", data)
+	err = tpl.ExecuteTemplate(w, "403.html", data)
 	if err != nil {
 		http.Error(w, "Ошибка при рендере страницы", http.StatusInternalServerError)
 	}
@@ -500,6 +501,13 @@ func notFoundPage(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		// если шаблон упал — возвращаем простой текст
 		http.Error(w, "Ошибка при рендере страницы 404", http.StatusInternalServerError)
+	}
+}
+
+func forbiddenHandler(w http.ResponseWriter, r *http.Request) {
+	err := tpl.ExecuteTemplate(w, "403.html", nil)
+	if err != nil {
+		http.Error(w, "Ошибка при рендере страницы", http.StatusInternalServerError)
 	}
 }
 

@@ -19,14 +19,14 @@
             <p>ID: <strong>{{.walletid}}</strong></p>
             <p>Баланс: <strong>{{.money}}₽</strong></p>
         </div>
-        <form action="/addmoney" method="POST">
-            <input type="number" name="amount" placeholder="Money" required>
-            <button class="button-money"  type="submit">Пополнить</button>
-        </form>
+<!--        <form action="/addmoney" method="POST">-->
+<!--            <input type="number" name="amount" placeholder="Money" required>-->
+<!--            <button class="button-money"  type="submit">Пополнить</button>-->
+<!--        </form>-->
         <div class="transactions" style="margin-top: 10px">
             <h3>История транзакций</h3>
             <hr>
-            <table>
+            <table style="max-width: 100%">
                 <thead>
                 <tr><th>Дата</th><th>Описание</th><th>Сумма</th></tr>
                 </thead>
